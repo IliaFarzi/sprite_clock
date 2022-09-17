@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>time</title>
+    <style>
+        .box {
+            width: 560px;
+            height: 110px;
+            margin: 10px auto;
+            display: flex;
+            flex-flow: row wrap;
+            align-items: center;
+        }
+
+        .char {
+            width: 70px;
+            height: 110px;
+            background-image: url("images/transparent/sprites.png");
+        }
+    </style>
+</head>
+<body>
+
+</body>
+</html>
+<script>
+    var time = new Date(),
+        timeZone = ["tehran", "210", "tokyo", "540", "toronto", "-240", "texas", "-300", "taiwan", "480"],
+        UTCHour = time.getUTCHours(),
+        UTCHMinute = time.getUTCMinutes(),
+        timeZoneObjList = [];
+
+    (function () {
+        for (var i = 0; i < timeZone.length; i += 2) {
+            setRealTime(timeZone[i], timeZone[i + 1]);
+            showAndUpdate(timeZone[i], i / 2);
+        }
+    }())
+
+    function setRealTime(_name, _UTCDifference) {
+        var localTime = new Date()
+        localTime.setHours(UTCHour, UTCHMinute + parseInt(_UTCDifference))
+        timeZoneObjList.push(localTime)
+    }
+
+    function showAndUpdate(_name, _index) {
+        var card = document.createElement("div")
+        card.id = _name
+        card.classList.add("box")
+        for (var i = 1; i <= 8; i++) {
+            var newChar = document.createElement("div")
+            newChar.classList.add("char")
+            card.appendChild(newChar)
+        }
+        document.body.appendChild(card)
+        setInterval(Update.bind(null, _index), 1000)
+    }
+
+    function Update(_index) {
+        timeZoneObjList[_index].setSeconds(timeZoneObjList[_index].getSeconds() + 1)
+        var timeStr = timeToString(_index),
+            charList = document.querySelectorAll("#" + timeZone[_index * 2] + " .char")
+        for (var i = 0; i < timeStr.length; i++) {
+            if (timeStr[i] === ":") {
+                charList.item(i).style.backgroundPositionX = (10 * -(70)) + "px"
+            } else {
+                charList.item(i).style.backgroundPositionX = (timeStr[i] * (-70)) + "px"
+
+            }
+        }
+    }
+
+    function timeToString(_index) {
+        var timer = timeZoneObjList[_index],
+            hou = timer.getHours() < 10 ? "0" + timer.getHours() : timer.getHours(),
+            min = timer.getMinutes() < 10 ? "0" + timer.getMinutes() : timer.getMinutes(),
+            sec = timer.getSeconds() < 10 ? "0" + timer.getSeconds() : timer.getSeconds()
+        return (hou + ":" + min + ":" + sec)
+    }
+
+</script>
